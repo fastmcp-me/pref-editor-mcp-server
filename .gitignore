@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+
+# Others
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+
+# Build output
+dist/
+build/
+
+# TypeScript build output
+*.js
+*.js.map

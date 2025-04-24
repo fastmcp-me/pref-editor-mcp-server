@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-typescript-project",
+  "version": "1.0.0",
+  "description": "Pref-Editor MCP server",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "author": "Charles Muchene"
+}
