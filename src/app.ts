@@ -1,5 +1,16 @@
-import { listDevices } from "@charlesmuchene/pref-editor";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+  App,
+  listApps,
+  listFiles,
+  getDevice,
+  createFile,
+  listDevices,
+  readPreferences,
+} from "@charlesmuchene/pref-editor";
+import {
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 const server = new McpServer({
@@ -7,14 +18,65 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-server.tool("devices", "Lists connected devices", async () => ({
-  content: [
-    {
-      type: "text",
-      text: (await listDevices()).map((device) => device.serial).toString(),
-    },
-  ],
+server.resource("devices", "pref-editor://devices", async (_uri) => ({
+  contents: (await listDevices()).map((device) => ({
+    uri: `pref-editor://${device.serial}`,
+    text: device.serial,
+  })),
 }));
+
+server.resource(
+  "apps",
+  new ResourceTemplate("pref-editor://{deviceId}", { list: undefined }),
+  async (_uri, { deviceId }) => ({
+    contents: (
+      await listApps(
+        getDevice(Array.isArray(deviceId) ? deviceId[0] : deviceId)
+      )
+    ).map((app) => ({
+      uri: `pref-editor://${deviceId}/${app.packageName}`,
+      text: app.packageName,
+    })),
+  })
+);
+
+server.resource(
+  "files",
+  new ResourceTemplate("pref-editor://{deviceId}/{appId}", {
+    list: undefined,
+  }),
+  async (_uri, { deviceId, appId }) => {
+    const devId = Array.isArray(deviceId) ? deviceId[0] : deviceId;
+    const app: App = { packageName: Array.isArray(appId) ? appId[0] : appId };
+    return {
+      contents: (await listFiles(getDevice(devId), app)).map((file) => ({
+        uri: `pref-editor://${deviceId}/${app.packageName}/${file.name}`,
+        text: file.name,
+      })),
+    };
+  }
+);
+
+server.resource(
+  "preferences",
+  new ResourceTemplate("pref-editor://{deviceId}/{appId}/{filename}", {
+    list: undefined,
+  }),
+  async (_uri, { deviceId, appId, filename }) => {
+    const devId = Array.isArray(deviceId) ? deviceId[0] : deviceId;
+    const app: App = { packageName: Array.isArray(appId) ? appId[0] : appId };
+    const file = createFile(Array.isArray(filename) ? filename[0] : filename);
+    return {
+      contents: (await readPreferences(getDevice(devId), app, file)).map(
+        (pref) => ({
+          uri: `pref-editor://${deviceId}/${app.packageName}/${file.name}/${pref.key}`,
+          mimeType: "application/json",
+          text: JSON.stringify(pref, null, 2),
+        })
+      ),
+    };
+  }
+);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
