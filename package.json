@@ -1,17 +1,36 @@
 {
-  "name": "nodejs-typescript-project",
+  "name": "@charlesmuchene/pref-editor-mcp-server",
   "version": "1.0.0",
   "description": "Pref-Editor MCP server",
   "main": "dist/app.js",
+  "type": "commonjs",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "ts-node src/app.ts"
   },
+  "author": {
+    "name": "Charles Muchene",
+    "url": "https://charlesmuchene.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charlesmuchene/pref-editor-mcp-server.git"
+  },
+  "keywords": [
+    "MCP",
+    "pref-editor",
+    "mcp-server",
+    "agentic-ai",
+    "ai"
+  ],
   "devDependencies": {
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
-  "author": "Charles Muchene"
+  "dependencies": {
+    "@charlesmuchene/pref-editor": "^1.0.0"
+  }
 }
