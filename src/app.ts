@@ -13,10 +13,18 @@ import {
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
-const server = new McpServer({
-  name: "Pref-Editor",
-  version: "1.0.0",
-});
+const server = new McpServer(
+  {
+    name: "Pref-Editor",
+    version: "1.0.0",
+  },
+  {
+    capabilities: {
+      resources: {},
+      tools: {},
+    },
+  }
+);
 
 server.resource("devices", "pref-editor://devices", async (_uri) => ({
   contents: (await listDevices()).map((device) => ({
