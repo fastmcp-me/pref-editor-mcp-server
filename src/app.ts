@@ -12,6 +12,7 @@ import {
   ResourceTemplate,
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
 
 const server = new McpServer(
   {
@@ -82,6 +83,55 @@ server.resource(
           text: JSON.stringify(pref, null, 2),
         })
       ),
+    };
+  }
+);
+
+server.tool(
+  "edit",
+  "Edit a preference",
+  { key: z.string(), value: z.string(), uri: z.string().url() },
+  async ({ key, value, uri }) => {
+    return {
+      isError: false,
+      content: [
+        {
+          type: "text",
+          text: `Preference edited successfully: ${key}, ${value}, ${uri}`,
+        },
+      ],
+    };
+  }
+);
+server.tool(
+  "add",
+  "Add a preference",
+  { key: z.string(), value: z.string(), uri: z.string().url() },
+  async ({ key, value, uri }) => {
+    return {
+      isError: false,
+      content: [
+        {
+          type: "text",
+          text: `Preference added successfully: ${key}, ${value}, ${uri}`,
+        },
+      ],
+    };
+  }
+);
+server.tool(
+  "delete",
+  "Delete a preference",
+  { key: z.string(), uri: z.string().url() },
+  async ({ key, uri }) => {
+    return {
+      isError: false,
+      content: [
+        {
+          type: "text",
+          text: `Preference deleted successfully: ${key}, ${uri}`,
+        },
+      ],
     };
   }
 );
