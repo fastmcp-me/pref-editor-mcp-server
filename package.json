@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Pref-Editor MCP server",
   "main": "dist/app.js",
-  "type": "commonjs",
+  "type": "module",
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsc",
@@ -31,6 +31,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@charlesmuchene/pref-editor": "^1.0.0"
+    "@charlesmuchene/pref-editor": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.10.2"
   }
 }
