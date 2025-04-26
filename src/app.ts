@@ -1,9 +1,6 @@
 import {
-  App,
   listApps,
   listFiles,
-  getDevice,
-  createFile,
   listDevices,
   readPreferences,
 } from "@charlesmuchene/pref-editor";
@@ -37,12 +34,8 @@ server.resource("devices", "pref-editor://devices", async (_uri) => ({
 server.resource(
   "apps",
   new ResourceTemplate("pref-editor://{deviceId}", { list: undefined }),
-  async (_uri, { deviceId }) => ({
-    contents: (
-      await listApps(
-        getDevice(Array.isArray(deviceId) ? deviceId[0] : deviceId)
-      )
-    ).map((app) => ({
+  async (uri, { deviceId }) => ({
+    contents: (await listApps(uri)).map((app) => ({
       uri: `pref-editor://${deviceId}/${app.packageName}`,
       text: app.packageName,
     })),
@@ -54,12 +47,10 @@ server.resource(
   new ResourceTemplate("pref-editor://{deviceId}/{appId}", {
     list: undefined,
   }),
-  async (_uri, { deviceId, appId }) => {
-    const devId = Array.isArray(deviceId) ? deviceId[0] : deviceId;
-    const app: App = { packageName: Array.isArray(appId) ? appId[0] : appId };
+  async (uri, { deviceId, appId }) => {
     return {
-      contents: (await listFiles(getDevice(devId), app)).map((file) => ({
-        uri: `pref-editor://${deviceId}/${app.packageName}/${file.name}`,
+      contents: (await listFiles(uri)).map((file) => ({
+        uri: `pref-editor://${deviceId}/${appId}/${file.name}`,
         text: file.name,
       })),
     };
@@ -71,18 +62,13 @@ server.resource(
   new ResourceTemplate("pref-editor://{deviceId}/{appId}/{filename}", {
     list: undefined,
   }),
-  async (_uri, { deviceId, appId, filename }) => {
-    const devId = Array.isArray(deviceId) ? deviceId[0] : deviceId;
-    const app: App = { packageName: Array.isArray(appId) ? appId[0] : appId };
-    const file = createFile(Array.isArray(filename) ? filename[0] : filename);
+  async (uri, { deviceId, appId, filename }) => {
     return {
-      contents: (await readPreferences(getDevice(devId), app, file)).map(
-        (pref) => ({
-          uri: `pref-editor://${deviceId}/${app.packageName}/${file.name}/${pref.key}`,
-          mimeType: "application/json",
-          text: JSON.stringify(pref, null, 2),
-        })
-      ),
+      contents: (await readPreferences(uri)).map((pref) => ({
+        uri: `pref-editor://${deviceId}/${appId}/${filename}/${pref.key}`,
+        mimeType: "application/json",
+        text: JSON.stringify(pref, null, 2),
+      })),
     };
   }
 );
