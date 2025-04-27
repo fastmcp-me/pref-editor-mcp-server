@@ -2,7 +2,10 @@ import {
   listApps,
   listFiles,
   listDevices,
+  addPreference,
   readPreferences,
+  Preference,
+  TypeTag,
 } from "@charlesmuchene/pref-editor";
 import {
   McpServer,
@@ -10,6 +13,12 @@ import {
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+
+const parseDataType = (type: string): TypeTag => {
+  const result = TypeTag[type.toUpperCase() as keyof typeof TypeTag];
+  if (result === undefined) throw new Error(`Invalid data type: ${type}`);
+  return result;
+};
 
 const server = new McpServer(
   {
@@ -92,8 +101,19 @@ server.tool(
 server.tool(
   "add",
   "Add a preference",
-  { key: z.string(), value: z.string(), uri: z.string().url() },
-  async ({ key, value, uri }) => {
+  {
+    key: z.string(),
+    value: z.string(),
+    type: z.string(),
+    uri: z.string().url(),
+  },
+  async ({ key, value, type, uri }) => {
+    const pref: Preference = {
+      key,
+      value,
+      tag: parseDataType(type),
+    };
+    addPreference(pref, URL.parse(uri)!);
     return {
       isError: false,
       content: [
