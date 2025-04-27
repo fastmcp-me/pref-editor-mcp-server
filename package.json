@@ -1,15 +1,22 @@
 {
   "name": "@charlesmuchene/pref-editor-mcp-server",
   "version": "1.0.0",
-  "description": "Pref-Editor MCP server",
-  "main": "dist/index.js",
+  "description": "MCP server for editing Android preferences",
   "type": "module",
   "license": "Apache-2.0",
+  "bin": {
+    "mcp-server-pref-editor": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && shx chmod +x dist/*.js",
     "clean": "rimraf dist",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "prepare": "npm run build",
+    "watch": "tsc --watch"
   },
   "author": {
     "name": "Charles Muchene",
@@ -19,6 +26,7 @@
     "type": "git",
     "url": "https://github.com/charlesmuchene/pref-editor-mcp-server.git"
   },
+  "bugs": "https://github.com/charlesmuchene/pref-editor-mcp-server/issues",
   "keywords": [
     "MCP",
     "pref-editor",
@@ -29,6 +37,7 @@
   "devDependencies": {
     "@types/node": "^22.15.0",
     "rimraf": "^6.0.1",
+    "shx": "^0.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
