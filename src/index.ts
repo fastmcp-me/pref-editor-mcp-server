@@ -1,18 +1,56 @@
 import {
+  TypeTag,
   listApps,
   listFiles,
+  Preference,
   listDevices,
   addPreference,
+  deletePreference,
+  changePreference,
   readPreferences,
-  Preference,
-  TypeTag,
 } from "@charlesmuchene/pref-editor";
-import {
-  McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+
+const deviceSchema = {
+  deviceId: z.string(),
+};
+
+const appSchema = Object.assign(
+  {
+    appId: z.string(),
+  },
+  deviceSchema
+);
+
+const fileSchema = Object.assign(
+  {
+    filename: z
+      .string()
+      .endsWith(".xml")
+      .or(z.string().endsWith(".preferences_pb")),
+  },
+  appSchema
+);
+
+const prefSchema = {
+  key: z.string(),
+  value: z.string(),
+  type: z.string(),
+};
+
+const addPrefSchema = {
+  ...prefSchema,
+  ...fileSchema,
+};
+
+const editPrefSchema = { ...addPrefSchema };
+
+const deletePrefSchema = {
+  key: z.string(),
+  ...fileSchema,
+};
 
 const parseDataType = (type: string): TypeTag => {
   const result = TypeTag[type.toUpperCase() as keyof typeof TypeTag];
@@ -33,113 +71,113 @@ const server = new McpServer(
   }
 );
 
-server.resource("devices", "pref-editor://devices", async (_uri) => ({
-  contents: (await listDevices()).map((device) => ({
-    uri: `pref-editor://${device.serial}`,
-    text: device.serial,
-  })),
-}));
-
-server.resource(
-  "apps",
-  new ResourceTemplate("pref-editor://{deviceId}", { list: undefined }),
-  async (uri, { deviceId }) => ({
-    contents: (await listApps(uri)).map((app) => ({
-      uri: `pref-editor://${deviceId}/${app.packageName}`,
-      text: app.packageName,
-    })),
-  })
-);
-
-server.resource(
-  "files",
-  new ResourceTemplate("pref-editor://{deviceId}/{appId}", {
-    list: undefined,
-  }),
-  async (uri, { deviceId, appId }) => {
-    return {
-      contents: (await listFiles(uri)).map((file) => ({
-        uri: `pref-editor://${deviceId}/${appId}/${file.name}`,
-        text: file.name,
-      })),
-    };
-  }
-);
-
-server.resource(
-  "preferences",
-  new ResourceTemplate("pref-editor://{deviceId}/{appId}/{filename}", {
-    list: undefined,
-  }),
-  async (uri, { deviceId, appId, filename }) => {
-    return {
-      contents: (await readPreferences(uri)).map((pref) => ({
-        uri: `pref-editor://${deviceId}/${appId}/${filename}/${pref.key}`,
-        mimeType: "application/json",
-        text: JSON.stringify(pref, null, 2),
-      })),
-    };
-  }
-);
-
 server.tool(
-  "edit",
-  "Edit a preference",
-  { key: z.string(), value: z.string(), uri: z.string().url() },
-  async ({ key, value, uri }) => {
-    return {
-      isError: false,
-      content: [
-        {
-          type: "text",
-          text: `Preference edited successfully: ${key}, ${value}, ${uri}`,
-        },
-      ],
-    };
-  }
-);
-server.tool(
-  "add",
-  "Add a preference",
-  {
-    key: z.string(),
-    value: z.string(),
-    type: z.string(),
-    uri: z.string().url(),
-  },
-  async ({ key, value, type, uri }) => {
+  "add_preference",
+  "Adds a new preference given the key, value and type.",
+  addPrefSchema,
+  async ({ key, value, type, ...connection }) => {
     const pref: Preference = {
       key,
       value,
       tag: parseDataType(type),
     };
-    addPreference(pref, URL.parse(uri)!);
+    // TODO Indicate success or failure
+    addPreference(pref, { ...connection });
     return {
-      isError: false,
       content: [
         {
           type: "text",
-          text: `Preference added successfully: ${key}, ${value}, ${uri}`,
+          text: `Preference added`,
         },
       ],
     };
   }
 );
+
 server.tool(
-  "delete",
-  "Delete a preference",
-  { key: z.string(), uri: z.string().url() },
-  async ({ key, uri }) => {
+  "edit_preference",
+  "Change the value of an existing preference",
+  editPrefSchema,
+  async ({ key, value, type, ...connection }) => {
+    const pref: Preference = {
+      key,
+      value,
+      tag: parseDataType(type),
+    };
+    // TODO Indicate success or failure
+    changePreference(pref, connection);
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Preference edited`,
+        },
+      ],
+    };
+  }
+);
+
+server.tool(
+  "delete_preference",
+  "Delete an existing preference",
+  deletePrefSchema,
+  async ({ key, ...connection }) => {
+    // TODO Indicate success or failure
+    deletePreference({ key }, connection);
     return {
       isError: false,
       content: [
         {
           type: "text",
-          text: `Preference deleted successfully: ${key}, ${uri}`,
+          text: `Preference deleted`,
         },
       ],
     };
   }
+);
+
+server.tool("devices", "Lists connected Android devices", async () => ({
+  content: (await listDevices()).map((device) => ({
+    type: "text",
+    text: device.serial,
+  })),
+}));
+
+server.tool(
+  "apps",
+  "Lists apps installed on device",
+  deviceSchema,
+  async ({ deviceId }) => ({
+    content: (await listApps({ deviceId })).map((app) => ({
+      type: "text",
+      text: app.packageName,
+    })),
+  })
+);
+
+server.tool(
+  "files",
+  "Lists preference files for an app",
+  appSchema,
+  async ({ deviceId, appId }) => ({
+    content: (await listFiles({ deviceId, appId })).map((file) => ({
+      type: "text",
+      text: file.name,
+    })),
+  })
+);
+
+server.tool(
+  "preferences",
+  "Lists user preferences in a file",
+  fileSchema,
+  async (connection) => ({
+    content: (await readPreferences(connection)).map((pref) => ({
+      type: "text",
+      mimeType: "application/json",
+      text: JSON.stringify(pref, null, 2),
+    })),
+  })
 );
 
 const transport = new StdioServerTransport();
