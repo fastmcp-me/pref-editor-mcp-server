@@ -19,13 +19,13 @@ Add this to the server configuration file:
 
 ## Demo
 
-| Connected Devices| Apps, Files, Preferences |
+| Add a user preference | Available tools |
 |-------------------------|-------------------------|
-| ![Connected Devices](./demo-1.png) | ![Apps, Files, Preferences](./demo-2.png) |
+| ![Add user preference](./demo/add-pref.png) | ![Available tools](./demo/tools-listing.png) |
 
-| Listing Datastore Prefs | Adding a preference |
+| List connected devices | List installed apps |
 |-------------------------|-------------------------|
-| ![Listing Datastore Prefs](./demo-3.png) | ![Adding a preference](./demo-4.png) |
+| ![List connected devices](./demo/list-devices.png) | ![List installed apps](./demo/list-apps.png) |
 
 ## License
 
