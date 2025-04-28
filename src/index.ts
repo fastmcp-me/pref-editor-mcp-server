@@ -61,7 +61,7 @@ const parseDataType = (type: string): TypeTag => {
 const server = new McpServer(
   {
     name: "Pref-Editor",
-    version: "1.0.0",
+    version: "0.1.0",
   },
   {
     capabilities: {
@@ -95,8 +95,8 @@ server.tool(
 );
 
 server.tool(
-  "edit_preference",
-  "Change the value of an existing preference",
+  "change_preference",
+  "Changes the value of an existing preference",
   editPrefSchema,
   async ({ key, value, type, ...connection }) => {
     const pref: Preference = {
@@ -144,7 +144,7 @@ server.tool("devices", "Lists connected Android devices", async () => ({
 }));
 
 server.tool(
-  "apps",
+  "list_apps",
   "Lists apps installed on device",
   deviceSchema,
   async ({ deviceId }) => ({
@@ -156,7 +156,7 @@ server.tool(
 );
 
 server.tool(
-  "files",
+  "list_files",
   "Lists preference files for an app",
   appSchema,
   async ({ deviceId, appId }) => ({
@@ -168,8 +168,8 @@ server.tool(
 );
 
 server.tool(
-  "preferences",
-  "Lists user preferences in a file",
+  "read_preferences",
+  "Reads all user preferences in a file",
   fileSchema,
   async (connection) => ({
     content: (await readPreferences(connection)).map((pref) => ({
