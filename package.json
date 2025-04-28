@@ -16,7 +16,8 @@
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "prepare": "npm run build",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "lint": "eslint src/ --ext .ts"
   },
   "author": {
     "name": "Charles Muchene",
@@ -36,6 +37,9 @@
   ],
   "devDependencies": {
     "@types/node": "^22.15.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^9.25.1",
     "rimraf": "^6.0.1",
     "shx": "^0.4.0",
     "ts-node": "^10.9.2",
@@ -43,6 +47,7 @@
   },
   "dependencies": {
     "@charlesmuchene/pref-editor": "^0.1.0",
-    "@modelcontextprotocol/sdk": "^1.10.2"
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "typescript-eslint": "^8.31.0"
   }
 }
