@@ -1,6 +1,6 @@
 {
   "name": "@charlesmuchene/pref-editor-mcp-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MCP server for editing Android preferences",
   "type": "module",
   "license": "Apache-2.0",
@@ -42,7 +42,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@charlesmuchene/pref-editor": "^1.0.0",
+    "@charlesmuchene/pref-editor": "^0.1.0",
     "@modelcontextprotocol/sdk": "^1.10.2"
   }
 }
