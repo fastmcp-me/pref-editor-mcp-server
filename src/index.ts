@@ -17,25 +17,16 @@ const deviceSchema = {
   deviceId: z.string(),
 };
 
-const appSchema = Object.assign(
-  {
-    appId: z.string(),
-  },
-  deviceSchema
-);
+const appSchema = Object.assign(deviceSchema, {
+  appId: z.string(),
+});
 
-const fileSchema = Object.assign(
-  {
-    filename: z
-      .string()
-      .endsWith(".xml")
-      .or(z.string().endsWith(".preferences_pb")),
-  },
-  appSchema
-);
+const fileSchema = Object.assign(appSchema, {
+  filename: z.string().regex(/.*\.(xml|preferences_pb)$/),
+});
 
 const prefSchema = {
-  key: z.string(),
+  name: z.string(),
   value: z.string(),
   type: z.string(),
 };
@@ -48,7 +39,7 @@ const addPrefSchema = {
 const editPrefSchema = { ...addPrefSchema };
 
 const deletePrefSchema = {
-  key: z.string(),
+  name: z.string(),
   ...fileSchema,
 };
 
@@ -73,13 +64,13 @@ const server = new McpServer(
 
 server.tool(
   "add_preference",
-  "Adds a new preference given the key, value and type.",
+  "Adds a new preference given the name, value and type.",
   addPrefSchema,
-  async ({ key, value, type, ...connection }) => {
+  async ({ name, value, type, ...connection }) => {
     const pref: Preference = {
-      key,
+      key: name,
       value,
-      tag: parseDataType(type),
+      type: parseDataType(type),
     };
     // TODO Indicate success or failure
     addPreference(pref, { ...connection });
@@ -98,11 +89,11 @@ server.tool(
   "change_preference",
   "Changes the value of an existing preference",
   editPrefSchema,
-  async ({ key, value, type, ...connection }) => {
+  async ({ name, value, type, ...connection }) => {
     const pref: Preference = {
-      key,
       value,
-      tag: parseDataType(type),
+      key: name,
+      type: parseDataType(type),
     };
     // TODO Indicate success or failure
     changePreference(pref, connection);
@@ -121,9 +112,9 @@ server.tool(
   "delete_preference",
   "Delete an existing preference",
   deletePrefSchema,
-  async ({ key, ...connection }) => {
+  async ({ name, ...connection }) => {
     // TODO Indicate success or failure
-    deletePreference({ key }, connection);
+    deletePreference({ key: name }, connection);
     return {
       isError: false,
       content: [
@@ -159,8 +150,8 @@ server.tool(
   "list_files",
   "Lists preference files for an app",
   appSchema,
-  async ({ deviceId, appId }) => ({
-    content: (await listFiles({ deviceId, appId })).map((file) => ({
+  async (connection) => ({
+    content: (await listFiles(connection)).map((file) => ({
       type: "text",
       text: file.name,
     })),
