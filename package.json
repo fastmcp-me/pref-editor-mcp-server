@@ -46,7 +46,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@charlesmuchene/pref-editor": "^0.1.1",
+    "@charlesmuchene/pref-editor": "^0.2.0",
     "@devicefarmer/adbkit": "^3.3.8",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "@protobufjs/aspromise": "^1.1.2",
