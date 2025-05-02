@@ -63,29 +63,6 @@ const server = new McpServer(
 );
 
 server.tool(
-  "add_preference",
-  "Adds a new preference given the name, value and type.",
-  addPrefSchema,
-  async ({ name, value, type, ...connection }) => {
-    const pref: Preference = {
-      key: name,
-      value,
-      type: parseDataType(type),
-    };
-    // TODO Indicate success or failure
-    addPreference(pref, { ...connection });
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Preference added`,
-        },
-      ],
-    };
-  }
-);
-
-server.tool(
   "change_preference",
   "Changes the value of an existing preference",
   editPrefSchema,
@@ -121,6 +98,29 @@ server.tool(
         {
           type: "text",
           text: `Preference deleted`,
+        },
+      ],
+    };
+  }
+);
+
+server.tool(
+  "add_preference",
+  "Adds a new preference given the name, value and type.",
+  addPrefSchema,
+  async ({ name, value, type, ...connection }) => {
+    const pref: Preference = {
+      key: name,
+      value,
+      type: parseDataType(type),
+    };
+    // TODO Indicate success or failure
+    addPreference(pref, { ...connection });
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Preference added`,
         },
       ],
     };

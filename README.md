@@ -6,6 +6,18 @@ An **MCP server** for editing Android preferences - based on the [Android Prefer
 
 - Android [adb](https://developer.android.com/tools/adb)
 
+## Tools
+
+| Name              | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| change_preference | Changes the value of an existing preference           |
+| delete_preference | Delete an existing preference                         |
+| add_preference    | Adds a new preference given the name, value and type. |
+| devices           | Lists connected Android devices                       |
+| list_apps         | Lists apps installed on device                        |
+| list_files        | Lists preference files for an app                     |
+| read_preferences  | Reads all user preferences in a file                  |
+
 ## Usage
 
 Add this to the server configuration file:
@@ -15,7 +27,7 @@ Add this to the server configuration file:
   "mcpServers": {
     "pref-editor": {
       "command": "node",
-      "args": ["dist/index.js"]
+      "args": ["<path-to>/dist/index.js"]
     }
   }
 }
@@ -32,6 +44,12 @@ Add this to the server configuration file:
 ## Build
 
 `npm run build`
+
+## Glamad
+
+<a href="https://glama.ai/mcp/servers/@charlesmuchene/pref-editor-mcp-server">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@charlesmuchene/pref-editor-mcp-server/badge" />
+</a>
 
 ## License
 
