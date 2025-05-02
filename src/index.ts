@@ -52,7 +52,7 @@ const parseDataType = (type: string): TypeTag => {
 const server = new McpServer(
   {
     name: "Pref-Editor",
-    version: "0.2.0",
+    version: "0.2.1",
   },
   {
     capabilities: {
@@ -72,16 +72,27 @@ server.tool(
       key: name,
       type: parseDataType(type),
     };
-    // TODO Indicate success or failure
-    changePreference(pref, connection);
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Preference edited`,
-        },
-      ],
-    };
+    try {
+      await changePreference(pref, connection);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Preference changed`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
   }
 );
 
@@ -90,17 +101,27 @@ server.tool(
   "Delete an existing preference",
   deletePrefSchema,
   async ({ name, ...connection }) => {
-    // TODO Indicate success or failure
-    deletePreference({ key: name }, connection);
-    return {
-      isError: false,
-      content: [
-        {
-          type: "text",
-          text: `Preference deleted`,
-        },
-      ],
-    };
+    try {
+      await deletePreference({ key: name }, connection);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Preference deleted`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
   }
 );
 
@@ -109,66 +130,133 @@ server.tool(
   "Adds a new preference given the name, value and type.",
   addPrefSchema,
   async ({ name, value, type, ...connection }) => {
-    const pref: Preference = {
-      key: name,
-      value,
-      type: parseDataType(type),
-    };
-    // TODO Indicate success or failure
-    addPreference(pref, { ...connection });
+    try {
+      const pref: Preference = {
+        key: name,
+        value,
+        type: parseDataType(type),
+      };
+      await addPreference(pref, { ...connection });
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Preference added`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
+  }
+);
+
+server.tool("devices", "Lists connected Android devices", async () => {
+  try {
     return {
+      content: (await listDevices()).map((device) => ({
+        type: "text",
+        text: device.serial,
+      })),
+    };
+  } catch (error) {
+    return {
+      isError: true,
       content: [
         {
           type: "text",
-          text: `Preference added`,
+          text: error instanceof Error ? error.message : "Unknown error",
         },
       ],
     };
   }
-);
-
-server.tool("devices", "Lists connected Android devices", async () => ({
-  content: (await listDevices()).map((device) => ({
-    type: "text",
-    text: device.serial,
-  })),
-}));
+});
 
 server.tool(
   "list_apps",
   "Lists apps installed on device",
   deviceSchema,
-  async ({ deviceId }) => ({
-    content: (await listApps({ deviceId })).map((app) => ({
-      type: "text",
-      text: app.packageName,
-    })),
-  })
+  async ({ deviceId }) => {
+    try {
+      return {
+        content: (await listApps({ deviceId })).map((app) => ({
+          type: "text",
+          text: app.packageName,
+        })),
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
+  }
 );
 
 server.tool(
   "list_files",
   "Lists preference files for an app",
   appSchema,
-  async (connection) => ({
-    content: (await listFiles(connection)).map((file) => ({
-      type: "text",
-      text: file.name,
-    })),
-  })
+  async (connection) => {
+    try {
+      return {
+        content: (await listFiles(connection)).map((file) => ({
+          type: "text",
+          text: file.name,
+        })),
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
+  }
 );
 
 server.tool(
   "read_preferences",
   "Reads all user preferences in a file",
   fileSchema,
-  async (connection) => ({
-    content: (await readPreferences(connection)).map((pref) => ({
-      type: "text",
-      mimeType: "application/json",
-      text: JSON.stringify(pref, null, 2),
-    })),
-  })
+  async (connection) => {
+    try {
+      return {
+        content: (await readPreferences(connection)).map((pref) => ({
+          type: "text",
+          mimeType: "application/json",
+          text: JSON.stringify(pref, null, 2),
+        })),
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: error instanceof Error ? error.message : "Unknown error",
+          },
+        ],
+      };
+    }
+  }
 );
 
 const transport = new StdioServerTransport();
