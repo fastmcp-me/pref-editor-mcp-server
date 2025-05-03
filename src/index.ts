@@ -13,6 +13,19 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+const server = new McpServer(
+  {
+    name: "Pref-Editor",
+    version: "0.2.1",
+  },
+  {
+    capabilities: {
+      resources: {},
+      tools: {},
+    },
+  }
+);
+
 const deviceSchema = {
   deviceId: z.string(),
 };
@@ -22,7 +35,7 @@ const appSchema = Object.assign(deviceSchema, {
 });
 
 const fileSchema = Object.assign(appSchema, {
-  filename: z.string().regex(/.*\.(xml|preferences_pb)$/),
+  filename: z.string(),
 });
 
 const prefSchema = {
@@ -45,22 +58,12 @@ const deletePrefSchema = {
 
 const parseDataType = (type: string): TypeTag => {
   const result = TypeTag[type.toUpperCase() as keyof typeof TypeTag];
-  if (result === undefined) throw new Error(`Invalid data type: ${type}`);
+  if (result === undefined)
+    throw new Error(
+      `Invalid data type: '${type}'. Choose one of: integer, boolean, float, double, long or string`
+    );
   return result;
 };
-
-const server = new McpServer(
-  {
-    name: "Pref-Editor",
-    version: "0.2.1",
-  },
-  {
-    capabilities: {
-      resources: {},
-      tools: {},
-    },
-  }
-);
 
 server.tool(
   "change_preference",
