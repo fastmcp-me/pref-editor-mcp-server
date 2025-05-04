@@ -2,16 +2,16 @@
   "name": "@charlesmuchene/pref-editor-mcp-server",
   "version": "0.2.1",
   "description": "MCP server for editing Android preferences",
-  "type": "module",
+  "type": "commonjs",
   "license": "Apache-2.0",
   "bin": {
-    "mcp-server-pref-editor": "dist/index.js"
+    "@charlesmuchene/pref-editor-mcp-server": "dist/index.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc && shx chmod +x dist/*.js",
+    "build": "tsc && shx echo '#!/usr/bin/env node' | cat - dist/index.js > temp && mv temp dist/index.js && shx chmod +x dist/*.js",
     "clean": "rimraf dist",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
