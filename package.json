@@ -19,13 +19,10 @@
     "watch": "tsc --watch",
     "lint": "eslint src/ --ext .ts"
   },
-  "author": {
-    "name": "Charles Muchene",
-    "url": "https://charlesmuchene.com"
-  },
+  "author": "Charles Muchene <muchene.kazi@gmail.com> (https://charlesmuchene.com)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/charlesmuchene/pref-editor-mcp-server.git"
+    "url": "git+https://github.com/charlesmuchene/pref-editor-mcp-server.git"
   },
   "bugs": "https://github.com/charlesmuchene/pref-editor-mcp-server/issues",
   "keywords": [
@@ -33,7 +30,8 @@
     "pref-editor",
     "mcp-server",
     "agentic-ai",
-    "ai"
+    "ai",
+    "android-preferences"
   ],
   "devDependencies": {
     "@types/node": "^22.15.0",

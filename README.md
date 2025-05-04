@@ -26,8 +26,8 @@ Add this to the server configuration file:
 {
   "mcpServers": {
     "pref-editor": {
-      "command": "node",
-      "args": ["<path-to>/dist/index.js"]
+      "command": "npx",
+      "args": ["@charlesmuchene/pref-editor-mcp-server"]
     }
   }
 }
@@ -43,7 +43,8 @@ Add this to the server configuration file:
 
 ## Build
 
-`npm run build`
+- `npm run install`
+- `npm run build`
 
 ## Glamad
 

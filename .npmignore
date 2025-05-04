@@ -1,0 +1,12 @@
+node_modules/
+.vscode/
+src/
+*.log
+*.tsbuildinfo
+.DS_Store
+.vscode
+.env
+eslint.config.mjs
+tsconfig.json
+demo/
+Docker*
