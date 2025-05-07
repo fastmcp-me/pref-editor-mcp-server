@@ -16,7 +16,7 @@ import { z } from "zod";
 const server = new McpServer(
   {
     name: "Pref-Editor",
-    version: "0.2.2",
+    version: "0.2.3",
   },
   {
     capabilities: {
