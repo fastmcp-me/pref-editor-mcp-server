@@ -13,46 +13,38 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const server = new McpServer(
-  {
-    name: "Pref-Editor",
-    version: "0.2.3",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
-const deviceSchema = {
-  deviceId: z.string(),
+const DeviceSchema = {
+  deviceId: z.string().describe("The device's serial number."),
 };
 
-const appSchema = Object.assign(deviceSchema, {
-  appId: z.string(),
+const AppSchema = Object.assign(DeviceSchema, {
+  appId: z.string().describe("The application's package name."),
 });
 
-const fileSchema = Object.assign(appSchema, {
-  filename: z.string(),
+const FileSchema = Object.assign(AppSchema, {
+  filename: z.string().describe("The filename with or without the extension."),
 });
 
-const prefSchema = {
-  name: z.string(),
-  value: z.string(),
-  type: z.string(),
+const PrefSchema = {
+  name: z.string().describe("The name/key of the user preference"),
+  value: z.string().describe("The value of user preference (as a string)"),
+  type: z
+    .string()
+    .describe(
+      "The type of the preference value: integer, boolean, float, double, long or string"
+    ),
 };
 
-const addPrefSchema = {
-  ...prefSchema,
-  ...fileSchema,
+const AddPrefSchema = {
+  ...PrefSchema,
+  ...FileSchema,
 };
 
-const editPrefSchema = { ...addPrefSchema };
+const EditPrefSchema = { ...AddPrefSchema };
 
-const deletePrefSchema = {
-  name: z.string(),
-  ...fileSchema,
+const DeletePrefSchema = {
+  name: z.string().describe("The name/key of the user preference"),
+  ...FileSchema,
 };
 
 const parseDataType = (type: string): TypeTag => {
@@ -64,10 +56,22 @@ const parseDataType = (type: string): TypeTag => {
   return result;
 };
 
+const server = new McpServer(
+  {
+    name: "Pref-Editor",
+    version: "0.2.4",
+  },
+  {
+    capabilities: {
+      tools: {},
+    },
+  }
+);
+
 server.tool(
   "change_preference",
   "Changes the value of an existing preference",
-  editPrefSchema,
+  EditPrefSchema,
   async ({ name, value, type, ...connection }) => {
     const pref: Preference = {
       value,
@@ -101,7 +105,7 @@ server.tool(
 server.tool(
   "delete_preference",
   "Delete an existing preference",
-  deletePrefSchema,
+  DeletePrefSchema,
   async ({ name, ...connection }) => {
     try {
       await deletePreference({ key: name }, connection);
@@ -130,7 +134,7 @@ server.tool(
 server.tool(
   "add_preference",
   "Adds a new preference given the name, value and type.",
-  addPrefSchema,
+  AddPrefSchema,
   async ({ name, value, type, ...connection }) => {
     try {
       const pref: Preference = {
@@ -185,7 +189,7 @@ server.tool("devices", "Lists connected Android devices", async () => {
 server.tool(
   "list_apps",
   "Lists apps installed on device",
-  deviceSchema,
+  DeviceSchema,
   async ({ deviceId }) => {
     try {
       return {
@@ -211,7 +215,7 @@ server.tool(
 server.tool(
   "list_files",
   "Lists preference files for an app",
-  appSchema,
+  AppSchema,
   async (connection) => {
     try {
       return {
@@ -237,7 +241,7 @@ server.tool(
 server.tool(
   "read_preferences",
   "Reads all user preferences in a file",
-  fileSchema,
+  FileSchema,
   async (connection) => {
     try {
       return {
