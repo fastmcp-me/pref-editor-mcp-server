@@ -8,44 +8,45 @@ import {
   deletePreference,
   changePreference,
   readPreferences,
+  PartialPreference,
 } from "@charlesmuchene/pref-editor";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { z, ZodType } from "zod";
 
-const DeviceSchema = {
+const DeviceSchema = z.object({
   deviceId: z.string().describe("The device's serial number."),
-};
+});
 
-const AppSchema = Object.assign(DeviceSchema, {
+const AppSchema = DeviceSchema.extend({
   appId: z.string().describe("The application's package name."),
 });
 
-const FileSchema = Object.assign(AppSchema, {
+const FileSchema = AppSchema.extend({
   filename: z.string().describe("The filename with or without the extension."),
 });
 
-const PrefSchema = {
+const NameSchema = z.object({
   name: z.string().describe("The name/key of the user preference"),
-  value: z.string().describe("The value of user preference (as a string)"),
+});
+
+const PrefSchema = NameSchema.extend({
+  value: z.string().describe("The value of user preference"),
+});
+
+const TypedPrefSchema = PrefSchema.extend({
   type: z
     .string()
     .describe(
       "The type of the preference value: integer, boolean, float, double, long or string"
     ),
-};
+});
 
-const AddPrefSchema = {
-  ...PrefSchema,
-  ...FileSchema,
-};
+const AddPrefSchema = TypedPrefSchema.merge(FileSchema);
 
-const EditPrefSchema = { ...AddPrefSchema };
+const EditPrefSchema = PrefSchema.merge(FileSchema);
 
-const DeletePrefSchema = {
-  name: z.string().describe("The name/key of the user preference"),
-  ...FileSchema,
-};
+const DeletePrefSchema = NameSchema.merge(FileSchema);
 
 const parseDataType = (type: string): TypeTag => {
   const result = TypeTag[type.toUpperCase() as keyof typeof TypeTag];
@@ -54,6 +55,16 @@ const parseDataType = (type: string): TypeTag => {
       `Invalid data type: '${type}'. Choose one of: integer, boolean, float, double, long or string`
     );
   return result;
+};
+
+const validate = (input: unknown, type: ZodType) => {
+  const validationResult = type.safeParse(input);
+  if (!validationResult.success)
+    throw new Error(
+      `Invalid input: ${validationResult.error.errors
+        .map((err) => err.message)
+        .join(", ")}`
+    );
 };
 
 const server = new McpServer(
@@ -71,15 +82,20 @@ const server = new McpServer(
 server.tool(
   "change_preference",
   "Changes the value of an existing preference",
-  EditPrefSchema,
-  async ({ name, value, type, ...connection }) => {
-    const pref: Preference = {
-      value,
-      key: name,
-      type: parseDataType(type),
-    };
+  EditPrefSchema.shape,
+  async (input) => {
     try {
+      validate(input, EditPrefSchema);
+
+      const { name, value, ...connection } = input;
+
+      const pref: PartialPreference = {
+        value,
+        key: name,
+      };
+
       await changePreference(pref, connection);
+
       return {
         content: [
           {
@@ -105,10 +121,15 @@ server.tool(
 server.tool(
   "delete_preference",
   "Delete an existing preference",
-  DeletePrefSchema,
-  async ({ name, ...connection }) => {
+  DeletePrefSchema.shape,
+  async (input) => {
     try {
+      validate(input, DeletePrefSchema);
+
+      const { name, ...connection } = input;
+
       await deletePreference({ key: name }, connection);
+
       return {
         content: [
           {
@@ -134,15 +155,21 @@ server.tool(
 server.tool(
   "add_preference",
   "Adds a new preference given the name, value and type.",
-  AddPrefSchema,
-  async ({ name, value, type, ...connection }) => {
+  AddPrefSchema.shape,
+  async (input) => {
     try {
+      validate(input, AddPrefSchema);
+
+      const { name, value, type, ...connection } = input;
+
       const pref: Preference = {
         key: name,
         value,
         type: parseDataType(type),
       };
-      await addPreference(pref, { ...connection });
+
+      await addPreference(pref, connection);
+
       return {
         content: [
           {
@@ -189,11 +216,13 @@ server.tool("devices", "Lists connected Android devices", async () => {
 server.tool(
   "list_apps",
   "Lists apps installed on device",
-  DeviceSchema,
-  async ({ deviceId }) => {
+  DeviceSchema.shape,
+  async (connection) => {
     try {
+      validate(connection, DeviceSchema);
+
       return {
-        content: (await listApps({ deviceId })).map((app) => ({
+        content: (await listApps(connection)).map((app) => ({
           type: "text",
           text: app.packageName,
         })),
@@ -215,9 +244,11 @@ server.tool(
 server.tool(
   "list_files",
   "Lists preference files for an app",
-  AppSchema,
+  AppSchema.shape,
   async (connection) => {
     try {
+      validate(connection, AppSchema);
+
       return {
         content: (await listFiles(connection)).map((file) => ({
           type: "text",
@@ -241,9 +272,11 @@ server.tool(
 server.tool(
   "read_preferences",
   "Reads all user preferences in a file",
-  FileSchema,
+  FileSchema.shape,
   async (connection) => {
     try {
+      validate(connection, FileSchema);
+
       return {
         content: (await readPreferences(connection)).map((pref) => ({
           type: "text",
