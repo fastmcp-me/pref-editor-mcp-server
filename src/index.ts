@@ -70,7 +70,7 @@ const validate = (input: unknown, type: ZodType) => {
 const server = new McpServer(
   {
     name: "Pref-Editor",
-    version: "0.2.4",
+    version: "0.3.0",
   },
   {
     capabilities: {
