@@ -52,6 +52,10 @@ Experience a smarter, faster way to manage Android preferences—just ask!
  npm install -g @charlesmuchene/pref-editor-mcp-server
 ```
 
+## Docker
+
+An image for this server is available on [dockerhub](https://hub.docker.com/repository/docker/charlesmuchene/pref-editor-mcp-server).
+
 ## Integrations
 
 ### Android Studio
