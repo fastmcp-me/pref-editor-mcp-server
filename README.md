@@ -44,17 +44,17 @@ Experience a smarter, faster way to manage Android preferences—just ask!
 ## Requirements
 
 - Android [adb](https://developer.android.com/tools/adb)
-- Node.js 14+
+- Node.js 14+ or Docker
 
 ## Installation
 
 ```sh
  npm install -g @charlesmuchene/pref-editor-mcp-server
+
+ OR
+
+ docker pull charlesmuchene/pref-editor-mcp-server
 ```
-
-## Docker
-
-An image for this server is available on [dockerhub](https://hub.docker.com/repository/docker/charlesmuchene/pref-editor-mcp-server).
 
 ## Integrations
 
@@ -63,6 +63,20 @@ An image for this server is available on [dockerhub](https://hub.docker.com/repo
 > Assumes Github copilot Intellij plugin is installed
 
 Open the `~/.config/github-copilot/intellij/mcp.json` and add the following configuration:
+
+```json
+{
+  "servers": {
+    "pref-editor": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["charlesmuchene/pref-editor-mcp-server"]
+    }
+  }
+}
+```
+
+Or using `npx`
 
 ```json
 {
@@ -133,7 +147,13 @@ To use the server with VS Code, you need to:
 
 For more information, see the [VS Code documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers).
 
-## Building
+## Building Locally
+
+```sh
+docker run -it --rm --name pref-editor charlesmuchene/pref-editor-mcp-server
+```
+
+OR
 
 ```sh
 # Clone the repository
