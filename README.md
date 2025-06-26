@@ -44,7 +44,7 @@ Experience a smarter, faster way to manage Android preferences—just ask!
 ## Requirements
 
 - Android [adb](https://developer.android.com/tools/adb)
-- Node.js 16+
+- Node.js 14+
 
 ## Installation
 
