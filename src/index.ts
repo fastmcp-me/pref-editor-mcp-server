@@ -2,11 +2,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { configurePreferenceTools } from "./prefs";
 import { configureCommonTools } from "./common";
+import pkg from "../package.json";
 
 const server = new McpServer(
   {
     name: "Pref-Editor",
-    version: "0.4.0",
+    version: pkg.version,
   },
   {
     capabilities: {
