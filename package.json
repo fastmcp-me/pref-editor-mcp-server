@@ -34,17 +34,17 @@
     "android-preferences"
   ],
   "devDependencies": {
-    "@types/node": "^22.15.0",
-    "@typescript-eslint/eslint-plugin": "^8.31.0",
-    "@typescript-eslint/parser": "^8.31.0",
-    "eslint": "^9.25.1",
+    "@types/node": "^24.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
     "rimraf": "^6.0.1",
     "shx": "^0.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@charlesmuchene/pref-editor": "^0.5.0",
-    "@modelcontextprotocol/sdk": "^1.10.2"
+    "@charlesmuchene/pref-editor": "^0.6.1",
+    "@modelcontextprotocol/sdk": "^1.13.1"
   }
 }
