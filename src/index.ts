@@ -24,4 +24,9 @@ async function main() {
   await server.connect(transport);
 }
 
+// Start the server and handle any errors
 main().catch(console.error);
+
+// Keep the process alive indefinitely
+// ** Required for running app in a container
+setInterval(() => {}, 1 << 30);
