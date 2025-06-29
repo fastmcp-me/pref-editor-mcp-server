@@ -29,5 +29,6 @@ async function main() {
 try {
   await main()
 } catch (error) {
+  console.error("Error starting server:", error);
   process.exit(1);
 } 
