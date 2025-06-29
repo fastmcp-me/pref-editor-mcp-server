@@ -2,16 +2,17 @@
   "name": "@charlesmuchene/pref-editor-mcp-server",
   "version": "0.6.0",
   "description": "MCP server for editing Android preferences",
-  "type": "commonjs",
+  "type": "module",
   "license": "Apache-2.0",
   "bin": {
     "@charlesmuchene/pref-editor-mcp-server": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "build": "tsc && shx echo '#!/usr/bin/env node' | cat - dist/index.js > temp && mv temp dist/index.js && shx chmod +x dist/*.js",
+    "build": "tsc && shx chmod +x dist/index.js",
     "clean": "rimraf dist",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
@@ -26,12 +27,11 @@
   },
   "bugs": "https://github.com/charlesmuchene/pref-editor-mcp-server/issues",
   "keywords": [
-    "MCP",
-    "pref-editor",
-    "mcp-server",
-    "agentic-ai",
-    "ai",
-    "android-preferences"
+    "mcp",
+    "android preferences",
+    "android development",
+    "preferences-datastore",
+    "shared-preferences"
   ],
   "devDependencies": {
     "@types/node": "^24.0.4",

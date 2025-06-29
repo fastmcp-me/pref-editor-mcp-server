@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
-import { parseDataType, validate } from "./utils";
-import { EditPrefSchema, AddPrefSchema, DeletePrefSchema } from "./schema";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { parseDataType, validate } from "./utils.js";
+import { EditPrefSchema, AddPrefSchema, DeletePrefSchema } from "./schema.js";
 import {
   PartialPreference,
   changePreference,
@@ -14,7 +14,7 @@ export const configurePreferenceTools = (server: McpServer) => {
     "change_preference",
     "Changes the value of an existing preference",
     EditPrefSchema.shape,
-    async (input) => {
+    async (input: any) => {
       try {
         validate(input, EditPrefSchema);
 
@@ -53,7 +53,7 @@ export const configurePreferenceTools = (server: McpServer) => {
     "delete_preference",
     "Delete an existing preference",
     DeletePrefSchema.shape,
-    async (input) => {
+    async (input: any) => {
       try {
         validate(input, DeletePrefSchema);
 
@@ -87,7 +87,7 @@ export const configurePreferenceTools = (server: McpServer) => {
     "add_preference",
     "Adds a new preference given the name, value and type.",
     AddPrefSchema.shape,
-    async (input) => {
+    async (input: any) => {
       try {
         validate(input, AddPrefSchema);
 

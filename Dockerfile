@@ -19,5 +19,8 @@ COPY . .
 # Build the server
 RUN npm run build
 
+# Remove sources
+RUN rm -rf ./src
+
 # Start the server silently (without npm logs to conform to MCP requirements on stdio transport)
 ENTRYPOINT ["npm", "--silent", "run", "start"]
