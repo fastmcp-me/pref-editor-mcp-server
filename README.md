@@ -70,7 +70,7 @@ Open the `~/.config/github-copilot/intellij/mcp.json` and add the following conf
     "pref-editor": {
       "type": "stdio",
       "command": "docker",
-      "args": ["charlesmuchene/pref-editor-mcp-server"]
+      "args": ["run", "-i", "--rm", "charlesmuchene/pref-editor-mcp-server"]
     }
   }
 }
@@ -150,7 +150,7 @@ For more information, see the [VS Code documentation](https://code.visualstudio.
 ## Building Locally
 
 ```sh
-docker run -it --rm --name pref-editor charlesmuchene/pref-editor-mcp-server
+docker run -i --rm --name pref-editor charlesmuchene/pref-editor-mcp-server
 ```
 
 OR
