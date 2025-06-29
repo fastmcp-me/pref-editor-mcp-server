@@ -5,8 +5,8 @@ import {
   readPreferences,
 } from "@charlesmuchene/pref-editor";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { DeviceSchema, AppSchema, FileSchema } from "./schema.js";
-import { validate } from "./utils.js";
+import { DeviceSchema, AppSchema, FileSchema } from "../schema.js";
+import { validate } from "../utils.js";
 
 export const configureCommonTools = (server: McpServer) => {
   server.tool("devices", "Lists connected Android devices", async () => {

@@ -2,8 +2,8 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { configurePreferenceTools } from "./prefs.js";
-import { configureCommonTools } from "./common.js";
+import { configurePreferenceTools } from "./tools/prefs.js";
+import { configureCommonTools } from "./tools/common.js";
 import pkg from "../package.json" with { type: "json" };
 
 const server = new McpServer(

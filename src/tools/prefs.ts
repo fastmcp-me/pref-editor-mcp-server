@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { parseDataType, validate } from "./utils.js";
-import { EditPrefSchema, AddPrefSchema, DeletePrefSchema } from "./schema.js";
+import { parseDataType, validate } from "../utils.js";
+import { EditPrefSchema, AddPrefSchema, DeletePrefSchema } from "../schema.js";
 import {
   PartialPreference,
   changePreference,
