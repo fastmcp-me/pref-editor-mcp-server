@@ -121,8 +121,9 @@ To use the server with VS Code, you need to:
 
 1. Add the MCP Server configuration to your `mcp.json` or `settings.json`:
 
+.vscode/mcp.json
+
 ```json
-// .vscode/mcp.json
 {
   "servers": {
     "pref-editor": {
@@ -134,8 +135,9 @@ To use the server with VS Code, you need to:
 }
 ```
 
+~/Library/Application Support/Code/User/settings.json
+
 ```json
-// settings.json
 {
   "mcp": {
     "pref-editor": {
