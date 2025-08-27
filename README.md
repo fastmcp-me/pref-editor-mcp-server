@@ -23,10 +23,10 @@ Experience a smarter, faster way to manage Android preferences—just ask!
 | ----------------- | ----------------------------------------------------- |
 | change_preference | Changes the value of an existing preference           |
 | delete_preference | Delete an existing preference                         |
-| add_preference    | Adds a new preference given the name, value and type. |
+| add_preference    | Adds a new preference given the name, value, and type |
 | read_preferences  | Reads all user preferences in a file                  |
 | devices           | Lists connected Android devices                       |
-| list_apps         | Lists apps installed on device                        |
+| list_apps         | Lists apps installed on the device                    |
 | list_files        | Lists preference files for an app                     |
 
 ## Demo
@@ -50,7 +50,7 @@ Experience a smarter, faster way to manage Android preferences—just ask!
 
 > Assumes an MCP compatible client is installed.
 
-Add the following configuration to the MCP server config file. For example, for Github Copilot Intellij Plugin, the config file is `~/.config/github-copilot/intellij/mcp.json`.
+Add the following configuration to the MCP server config file. For example, for the GitHub Copilot IntelliJ Plugin, the config file is `~/.config/github-copilot/intellij/mcp.json`.
 
 #### Docker
 
@@ -81,7 +81,7 @@ Add the following configuration to the MCP server config file. For example, for 
 
 ### Claude Desktop
 
-Add this server in the `/Users/<username>/Library/Application Support/Claude/claude_desktop_config.json` configuration file.
+Add this server to the `/Users/<username>/Library/Application Support/Claude/claude_desktop_config.json` configuration file.
 
 #### Docker
 
@@ -153,7 +153,7 @@ For more information, see the [VS Code documentation](https://code.visualstudio.
 
 ## Building Locally
 
-Refer to [DEV.md](./DEV.md) on how to build this project.
+Refer to [DEV.md](./DEV.md) for instructions on how to build this project.
 
 ## Testing
 

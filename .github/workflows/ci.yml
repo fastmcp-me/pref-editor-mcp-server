@@ -28,12 +28,12 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           echo "Validating PR title: $PR_TITLE"
 
-          if [[ "$PR_TITLE" =~ ^(chore|feat|fix): ]]; then
+          if [[ "$PR_TITLE" =~ ^(BREAKING|breaking|feat|FEAT|fix|FIX): ]]; then
             echo "✅ PR title format is valid"
           else
-            echo "❌ PR title must start with 'chore:', 'feat:', or 'fix:'"
+            echo "❌ PR title must start with 'BREAKING:', 'feat:', or 'fix:' (case-insensitive)"
             echo "Examples:"
-            echo "  - chore: Remove deprecated tools"
+            echo "  - BREAKING: Remove deprecated tools"
             echo "  - feat: Add new preference validation feature"
             echo "  - fix: Fix typo in tool description"
             exit 1
@@ -46,12 +46,12 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const comment = '## ❌ Invalid PR Title Format\n\n' +
-              'Your PR title must start with one of: `major:`, `minor:`, or `patch:`\n\n' +
+              'Your PR title must start with one of: `BREAKING:`, `feat:`, or `fix:` (case-insensitive)\n\n' +
               '**Current title:** "' + context.payload.pull_request.title + '"\n\n' +
               '**Examples of valid titles:**\n' +
-              '- `chore: Remove deprecated tools` (breaking changes)\n' +
-              '- `feat: Add new preference validation feature` (new features)\n' +
-              '- `fix: Fix typo in tool description` (bug fixes)\n\n' +
+              '- `BREAKING: Remove deprecated tool` (breaking change → major version)\n' +
+              '- `feat: Add new preference validation feature` (new features → minor version)\n' +
+              '- `fix: Fix memory leak in connection handling` (bug fixes → patch version)\n\n' +
               'Please edit your PR title and the CI will run again automatically.';
 
             await github.rest.issues.createComment({
@@ -128,7 +128,7 @@ jobs:
             const comment = '## ❌ CI Failed\n\n' +
               'The CI build has failed for this PR. Please check the logs and fix the issues.\n\n' +
               '**Common fixes:**\n' +
-              '- **PR Title:** Must start with `major:`, `minor:`, or `patch:`\n' +
+              '- **PR Title:** Must start with `BREAKING:`, `feat:`, or `fix:` (case-insensitive)\n' +
               '- **Linting:** Run `npm run lint` locally\n' +
               '- **Build:** Run `npm run build` locally\n' +
               '- **Tests:** Run `npm test` locally\n' +

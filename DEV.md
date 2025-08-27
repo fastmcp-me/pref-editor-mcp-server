@@ -96,25 +96,25 @@ This ensures:
 
 ### 2. PR Title Format
 
-Your PR title **must** follow this format:
+Your PR title **must** follow this format (case-insensitive):
 
 ```
-chore: Description of breaking changes
-feat: Description of new features
-fix: Description of bug fixes
+BREAKING: Description of breaking changes (or breaking:)
+feat: Description of new features (or FEAT:)
+fix: Description of bug fixes (or FIX:)
 ```
 
 **Examples:**
 
-- `chore: Remove deprecated tools`
-- `feat: Add new preference validation feature`
-- `fix: Fix typo in tool description`
+- `BREAKING: Remove deprecated tools` (→ major version bump)
+- `feat: Add new preference validation feature` (→ minor version bump)
+- `fix: Fix memory leak in connection handling` (→ patch version bump)
 
 ❌ **Invalid titles will fail CI:**
 
 - `Add new feature` (missing prefix)
-- `Major: Breaking change` (wrong case)
-- `feat: Add feature` (wrong prefix)
+- `Feat: Breaking change` (wrong case)
+- `major: Remove API` (wrong prefix)
 
 ### 3. Test Coverage
 
@@ -164,10 +164,10 @@ When your PR is approved and merged:
 **CI failing on PR title:**
 
 ```bash
-# Fix your PR title format
-chore: Your description here
-feat: Your description here
-fix: Your description here
+# Fix your PR title format (case-insensitive)
+BREAKING: Your description here  # or breaking:
+feat: Your description here      # or FEAT:
+fix: Your description here       # or FIX:
 ```
 
 **Lint errors:**
@@ -246,8 +246,8 @@ git clone <repo> && cd <repo> && npm install
 # Before PR
 npm run verify
 
-# PR title format
-chore|feat|fix: Description
+# PR title format (case-insensitive)
+BREAKING|feat|fix: Description
 
 # After PR merged
 # → Automatic versioning and release

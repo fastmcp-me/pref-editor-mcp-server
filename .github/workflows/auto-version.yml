@@ -38,18 +38,18 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           echo "PR Title: $PR_TITLE"
 
-          if [[ "$PR_TITLE" =~ ^major: ]] || [[ "$PR_TITLE" =~ ^MAJOR: ]]; then
+          if [[ "$PR_TITLE" =~ ^BREAKING: ]] || [[ "$PR_TITLE" =~ ^breaking: ]]; then
             echo "VERSION_TYPE=major" >> $GITHUB_OUTPUT
-            echo "Detected: MAJOR version bump"
-          elif [[ "$PR_TITLE" =~ ^minor: ]] || [[ "$PR_TITLE" =~ ^MINOR: ]]; then
+            echo "Detected: MAJOR version bump (BREAKING: -> major)"
+          elif [[ "$PR_TITLE" =~ ^feat: ]] || [[ "$PR_TITLE" =~ ^FEAT: ]]; then
             echo "VERSION_TYPE=minor" >> $GITHUB_OUTPUT
-            echo "Detected: MINOR version bump"
-          elif [[ "$PR_TITLE" =~ ^patch: ]] || [[ "$PR_TITLE" =~ ^PATCH: ]]; then
+            echo "Detected: MINOR version bump (feat: -> minor)"
+          elif [[ "$PR_TITLE" =~ ^fix: ]] || [[ "$PR_TITLE" =~ ^FIX: ]]; then
             echo "VERSION_TYPE=patch" >> $GITHUB_OUTPUT
-            echo "Detected: PATCH version bump"
+            echo "Detected: PATCH version bump (fix: -> patch)"
           else
             echo "VERSION_TYPE=none" >> $GITHUB_OUTPUT
-            echo "No version bump detected - PR title must start with 'major:', 'minor:', or 'patch:'"
+            echo "No version bump detected - PR title must start with 'BREAKING:', 'feat:', or 'fix:' (case-insensitive)"
           fi
 
       - name: Run verification
@@ -68,7 +68,7 @@ jobs:
         if: steps.version-type.outputs.VERSION_TYPE != 'none'
         run: |
           git add package.json package-lock.json
-          git commit -m "chore: bump version to ${{ env.NEW_VERSION }}"
+          git commit -m "release: bump version to ${{ env.NEW_VERSION }}"
           git push origin main
 
       - name: Create and push tag
