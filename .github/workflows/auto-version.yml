@@ -26,8 +26,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --local user.email "muchene.kazi@gmail.com"
-          git config --local user.name "Charles Muchene as a bot"
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
 
       - name: Install dependencies
         run: npm ci
