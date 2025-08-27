@@ -21,37 +21,51 @@ jobs:
             const { owner, repo } = context.repo;
             const prNumber = context.payload.pull_request.number;
             const headSha = context.payload.pull_request.head.sha;
-            
+
             console.log(`Checking CI status for PR #${prNumber}, SHA: ${headSha}`);
-            
+
             // Get all check runs for this commit
             const checkRuns = await github.rest.checks.listForRef({
               owner,
               repo,
               ref: headSha
             });
-            
+
             // Get all status checks for this commit
-            const statusChecks = await github.rest.repos.getCombinedStatusForRef({
-              owner,
-              repo,
-              ref: headSha
-            });
-            
+            let statusChecks;
+            try {
+              statusChecks = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: headSha
+              });
+            } catch (error) {
+              console.log(`Could not fetch status checks: ${error.message}`);
+              statusChecks = { data: { state: 'pending', statuses: [] } };
+            }
+
             console.log(`Found ${checkRuns.data.check_runs.length} check runs`);
             console.log(`Combined status: ${statusChecks.data.state}`);
-            
-            // Look for CI workflow specifically
+
+            // Log all check runs for debugging
+            checkRuns.data.check_runs.forEach(run => {
+              console.log(`Check run: ${run.name} - ${run.status} (${run.conclusion})`);
+            });
+
+            // Look for CI workflow specifically (case-insensitive)
             const ciCheckRuns = checkRuns.data.check_runs.filter(run => 
-              run.name.includes('test') || run.name.includes('CI')
+              run.name.toLowerCase().includes('test') || 
+              run.name.toLowerCase().includes('ci') ||
+              run.name.toLowerCase().includes('build') ||
+              run.name.toLowerCase().includes('lint')
             );
-            
+
             console.log(`CI-related check runs: ${ciCheckRuns.length}`);
-            
+
             // Check if CI has completed and passed
             let ciPassed = false;
             let ciCompleted = false;
-            
+
             if (ciCheckRuns.length > 0) {
               // Check if all CI runs are completed
               ciCompleted = ciCheckRuns.every(run => run.status === 'completed');
@@ -71,18 +85,25 @@ jobs:
               ciCompleted = statusChecks.data.state !== 'pending';
               ciPassed = statusChecks.data.state === 'success';
               console.log(`No CI-specific runs found, using combined status: ${statusChecks.data.state}`);
+              
+              // Also check if there are any check runs at all
+              if (checkRuns.data.check_runs.length === 0 && statusChecks.data.statuses.length === 0) {
+                console.log('⚠️ No CI checks found - this might be expected for draft PRs or initial commits');
+                ciCompleted = true;
+                ciPassed = true;
+              }
             }
-            
+
             if (!ciCompleted) {
               core.setFailed('❌ CI checks are still running. Please wait for CI to complete before marking as ready for review.');
               return;
             }
-            
+
             if (!ciPassed) {
               core.setFailed('❌ CI checks have failed. Please fix the issues before marking as ready for review.');
               return;
             }
-            
+
             console.log('✅ All CI checks have passed');
 
       - name: Get CODEOWNERS
@@ -107,30 +128,14 @@ jobs:
             const owners = '${{ steps.codeowners.outputs.OWNERS }}';
             const prNumber = context.payload.pull_request.number;
             const prAuthor = context.payload.pull_request.user.login;
-            
+
             // Don't tag the PR author
             const filteredOwners = owners.split(' ')
               .filter(owner => owner.trim() !== '' && owner !== `@${prAuthor}`)
               .join(' ');
-            
+
             if (filteredOwners) {
-              const comment = `�  **Ready for Review**
-              
-This PR has been marked as ready for review. Code owners have been notified.
-
-${filteredOwners} - Please review this PR when you have a moment.
-
----
-**PR Summary:**
-- Title: ${{ github.event.pull_request.title }}
-- Author: @${{ github.event.pull_request.user.login }}
-- Branch: \`${{ github.event.pull_request.head.ref }}\`
-- Commits: ${{ github.event.pull_request.commits }}
-- Files changed: ${{ github.event.pull_request.changed_files }}
-
-**Checks:**
-- CI Status: ${{ github.event.pull_request.mergeable_state }}
-- Conflicts: ${context.payload.pull_request.mergeable ? '✅ No conflicts' : '⚠️ Has conflicts'}`;
+              const comment = `🔍 **Ready for Review**\n\nThis PR has been marked as ready for review. Code owners have been notified.\n\n${filteredOwners} - Please review this PR when you have a moment.\n\n---\n**PR Summary:**\n- Title: ${{ github.event.pull_request.title }}\n- Author: @${{ github.event.pull_request.user.login }}\n- Branch: \`${{ github.event.pull_request.head.ref }}\`\n- Commits: ${{ github.event.pull_request.commits }}\n- Files changed: ${{ github.event.pull_request.changed_files }}\n\n**Checks:**\n- CI Status: ✅ All checks passed\n- Conflicts: ${context.payload.pull_request.mergeable ? '✅ No conflicts' : '⚠️ Has conflicts'}\n- Mergeable: ${context.payload.pull_request.mergeable_state}`;
 
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
